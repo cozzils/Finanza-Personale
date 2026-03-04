@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finanza Personale — Guida Interattiva</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #1a1a18;
+    --cream: #f5f0e8;
+    --gold: #c9a84c;
+    --rust: #b85c38;
+    --sage: #5a7a5a;
+    --paper: #faf7f2;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HERO */
+  .hero {
+    background: var(--ink);
+    color: var(--cream);
+    padding: 60px 40px 50px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '€';
+    position: absolute;
+    right: -20px;
+    top: -30px;
+    font-family: 'Playfair Display', serif;
+    font-size: 300px;
+    color: rgba(201,168,76,0.07);
+    pointer-events: none;
+    line-height: 1;
+  }
+  .hero-label {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 7vw, 72px);
+    font-weight: 900;
+    line-height: 1.0;
+    max-width: 700px;
+  }
+  .hero h1 em {
+    font-style: italic;
+    color: var(--gold);
+  }
+  .hero p {
+    margin-top: 20px;
+    font-size: 16px;
+    color: rgba(245,240,232,0.65);
+    max-width: 500px;
+    line-height: 1.7;
+  }
+
+  /* NAV PILLS */
+  .nav {
+    display: flex;
+    gap: 10px;
+    padding: 28px 40px;
+    background: var(--paper);
+    border-bottom: 1px solid rgba(26,26,24,0.1);
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    backdrop-filter: blur(8px);
+  }
+  .nav-btn {
+    background: none;
+    border: 1.5px solid rgba(26,26,24,0.2);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 8px 18px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-weight: 400;
+  }
+  .nav-btn:hover, .nav-btn.active {
+    background: var(--ink);
+    color: var(--cream);
+    border-color: var(--ink);
+  }
+
+  /* SECTIONS */
+  .section { display: none; padding: 50px 40px; max-width: 860px; margin: 0 auto; }
+  .section.active { display: block; animation: fadeUp 0.4s ease; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 38px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .section-subtitle {
+    color: rgba(26,26,24,0.5);
+    font-size: 15px;
+    margin-bottom: 40px;
+    line-height: 1.6;
+  }
+
+  /* CARDS */
+  .card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; margin-bottom: 36px; }
+
+  .card {
+    background: var(--paper);
+    border: 1px solid rgba(26,26,24,0.1);
+    border-radius: 12px;
+    padding: 26px 24px;
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .card:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(26,26,24,0.1); }
+  .card-icon { font-size: 28px; margin-bottom: 14px; }
+  .card h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 8px; }
+  .card p { font-size: 14px; color: rgba(26,26,24,0.6); line-height: 1.65; }
+  .card-tag {
+    position: absolute;
+    top: 16px; right: 16px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 100px;
+    font-weight: 500;
+  }
+  .tag-must { background: rgba(184,92,56,0.12); color: var(--rust); }
+  .tag-smart { background: rgba(90,122,90,0.12); color: var(--sage); }
+  .tag-later { background: rgba(201,168,76,0.15); color: #8a6d1a; }
+
+  /* REGOLA 50/30/20 */
+  .budget-visual {
+    background: var(--ink);
+    color: var(--cream);
+    border-radius: 16px;
+    padding: 36px;
+    margin-bottom: 28px;
+  }
+  .budget-visual h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    margin-bottom: 6px;
+    color: var(--gold);
+  }
+  .budget-visual p { font-size: 14px; color: rgba(245,240,232,0.6); margin-bottom: 28px; }
+  .budget-bar {
+    height: 28px;
+    border-radius: 100px;
+    background: rgba(245,240,232,0.1);
+    overflow: hidden;
+    display: flex;
+    margin-bottom: 16px;
+  }
+  .bar-segment {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 500;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+  .bar-50 { background: var(--rust); width: 50%; }
+  .bar-30 { background: var(--gold); width: 30%; }
+  .bar-20 { background: var(--sage); width: 20%; }
+
+  .budget-labels { display: flex; gap: 24px; flex-wrap: wrap; }
+  .budget-label { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+  /* CALCOLATRICE */
+  .calc-box {
+    background: var(--paper);
+    border: 1px solid rgba(26,26,24,0.1);
+    border-radius: 16px;
+    padding: 36px;
+    margin-bottom: 28px;
+  }
+  .calc-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    margin-bottom: 20px;
+  }
+  .input-row { margin-bottom: 18px; }
+  .input-row label { display: block; font-size: 13px; color: rgba(26,26,24,0.55); margin-bottom: 6px; letter-spacing: 0.5px; }
+  .input-row input {
+    width: 100%;
+    background: var(--cream);
+    border: 1.5px solid rgba(26,26,24,0.15);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 18px;
+    color: var(--ink);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .input-row input:focus { border-color: var(--ink); }
+  .calc-btn {
+    background: var(--ink);
+    color: var(--cream);
+    border: none;
+    border-radius: 8px;
+    padding: 14px 32px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    width: 100%;
+    margin-top: 6px;
+  }
+  .calc-btn:hover { opacity: 0.85; }
+
+  .result-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 24px;
+  }
+  .result-item {
+    border-radius: 12px;
+    padding: 20px 16px;
+    text-align: center;
+  }
+  .r-needs { background: rgba(184,92,56,0.1); }
+  .r-wants { background: rgba(201,168,76,0.1); }
+  .r-save  { background: rgba(90,122,90,0.1); }
+  .result-item .r-pct { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; }
+  .result-item .r-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: rgba(26,26,24,0.5); margin-top: 2px; }
+  .result-item .r-euro { font-size: 20px; font-weight: 500; margin-top: 6px; }
+
+  /* FONDO EMERGENZA */
+  .progress-section { margin-bottom: 28px; }
+  .fe-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .fe-header span { font-size: 13px; color: rgba(26,26,24,0.5); }
+  .progress-bar-wrap {
+    background: rgba(26,26,24,0.08);
+    border-radius: 100px;
+    height: 14px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: linear-gradient(90deg, var(--sage), #7aaa7a);
+    transition: width 1s cubic-bezier(0.4,0,0.2,1);
+  }
+  .fe-note { font-size: 13px; color: rgba(26,26,24,0.55); margin-top: 8px; line-height: 1.6; }
+
+  /* CHECKLIST */
+  .checklist { list-style: none; }
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 0;
+    border-bottom: 1px solid rgba(26,26,24,0.07);
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .checklist li:last-child { border-bottom: none; }
+  .check-box {
+    width: 22px; height: 22px;
+    border: 2px solid rgba(26,26,24,0.25);
+    border-radius: 6px;
+    flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    margin-top: 1px;
+  }
+  .checklist li.done .check-box {
+    background: var(--sage);
+    border-color: var(--sage);
+    color: white;
+  }
+  .checklist li.done .check-text { text-decoration: line-through; opacity: 0.4; }
+  .check-text strong { display: block; font-weight: 500; font-size: 15px; margin-bottom: 2px; }
+  .check-text span { font-size: 13px; color: rgba(26,26,24,0.5); line-height: 1.5; }
+
+  /* CONCETTI CHIAVE */
+  .glossary { display: flex; flex-direction: column; gap: 0; }
+  .glossary-item {
+    border-bottom: 1px solid rgba(26,26,24,0.08);
+    overflow: hidden;
+  }
+  .glossary-q {
+    padding: 18px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 16px;
+  }
+  .glossary-q .chevron { transition: transform 0.3s; font-style: normal; opacity: 0.4; }
+  .glossary-item.open .chevron { transform: rotate(180deg); }
+  .glossary-a {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, padding 0.3s;
+    font-size: 14px;
+    color: rgba(26,26,24,0.65);
+    line-height: 1.75;
+  }
+  .glossary-item.open .glossary-a { max-height: 300px; padding-bottom: 18px; }
+
+  /* ERRORI COMUNI */
+  .mistake-list { display: flex; flex-direction: column; gap: 14px; }
+  .mistake-card {
+    display: flex;
+    gap: 18px;
+    background: var(--paper);
+    border-radius: 12px;
+    padding: 22px 24px;
+    border-left: 4px solid var(--rust);
+    align-items: flex-start;
+  }
+  .mistake-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: rgba(184,92,56,0.25);
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .mistake-text strong { font-size: 16px; font-weight: 500; display: block; margin-bottom: 4px; }
+  .mistake-text p { font-size: 14px; color: rgba(26,26,24,0.6); line-height: 1.6; }
+  .tip {
+    margin-top: 10px;
+    background: rgba(90,122,90,0.08);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--sage);
+  }
+  .tip strong { font-weight: 500; }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .hero { padding: 40px 24px 36px; }
+    .nav { padding: 18px 24px; }
+    .section { padding: 36px 24px; }
+    .result-grid { grid-template-columns: 1fr; }
+    .budget-labels { gap: 14px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-label">Guida Interattiva</div>
+  <h1>Finanza<br><em>Personale</em></h1>
+  <p>Tutto quello che devi sapere per prendere decisioni finanziarie migliori — da zero, passo dopo passo.</p>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="show('fondamenta')">🏗 Fondamenta</button>
+  <button class="nav-btn" onclick="show('budget')">📊 Regola 50/30/20</button>
+  <button class="nav-btn" onclick="show('emergenza')">🛡 Fondo Emergenza</button>
+  <button class="nav-btn" onclick="show('azione')">✅ Piano d'Azione</button>
+  <button class="nav-btn" onclick="show('errori')">⚠️ Errori Comuni</button>
+  <button class="nav-btn" onclick="show('glossario')">📖 Glossario</button>
+</nav>
+
+<!-- FONDAMENTA -->
+<div class="section active" id="fondamenta">
+  <div class="section-title">Le Fondamenta</div>
+  <div class="section-subtitle">Prima di investire o risparmiare, devi padroneggiare questi 4 pilastri. Costruisci dal basso.</div>
+  <div class="card-grid">
+    <div class="card">
+      <span class="card-tag tag-must">Prima cosa</span>
+      <div class="card-icon">🧭</div>
+      <h3>Conosci i tuoi numeri</h3>
+      <p>Entrate nette mensili, spese fisse, spese variabili. Senza questi dati, qualsiasi piano è cieco.</p>
+    </div>
+    <div class="card">
+      <span class="card-tag tag-must">Fondamentale</span>
+      <div class="card-icon">🛡</div>
+      <h3>Fondo d'emergenza</h3>
+      <p>3–6 mesi di spese in un conto liquido e separato. È l'assicurazione contro gli imprevisti della vita.</p>
+    </div>
+    <div class="card">
+      <span class="card-tag tag-smart">Poi questo</span>
+      <div class="card-icon">💳</div>
+      <h3>Elimina i debiti cattivi</h3>
+      <p>Carta di credito, prestiti al consumo. I tassi d'interesse alti mangiano qualsiasi rendimento.</p>
+    </div>
+    <div class="card">
+      <span class="card-tag tag-later">Terzo step</span>
+      <div class="card-icon">📈</div>
+      <h3>Inizia a investire</h3>
+      <p>Solo dopo i primi tre passi. Anche piccole somme, costanti nel tempo, fanno la differenza grazie all'interesse composto.</p>
+    </div>
+  </div>
+  <div class="card" style="border-left: 4px solid var(--gold);">
+    <div class="card-icon">💡</div>
+    <h3>Il principio più importante</h3>
+    <p style="font-size:15px;">Spendi meno di quello che guadagni. La differenza — il margine — è il carburante di tutta la tua vita finanziaria. Più è grande, più opzioni hai.</p>
+  </div>
+</div>
+
+<!-- BUDGET -->
+<div class="section" id="budget">
+  <div class="section-title">Regola 50/30/20</div>
+  <div class="section-subtitle">Un framework semplice per allocare il tuo reddito netto mensile senza stress.</div>
+
+  <div class="budget-visual">
+    <h3>La tua allocazione ideale</h3>
+    <p>Ogni euro che entra dovrebbe seguire questa proporzione</p>
+    <div class="budget-bar">
+      <div class="bar-segment bar-50">50%</div>
+      <div class="bar-segment bar-30">30%</div>
+      <div class="bar-segment bar-20">20%</div>
+    </div>
+    <div class="budget-labels">
+      <div class="budget-label"><div class="dot" style="background:var(--rust)"></div> Bisogni (affitto, cibo, bollette)</div>
+      <div class="budget-label"><div class="dot" style="background:var(--gold)"></div> Desideri (svago, hobby, ristoranti)</div>
+      <div class="budget-label"><div class="dot" style="background:var(--sage)"></div> Risparmio & investimenti</div>
+    </div>
+  </div>
+
+  <div class="calc-box">
+    <h3>Calcola il tuo 50/30/20</h3>
+    <div class="input-row">
+      <label>REDDITO NETTO MENSILE (€)</label>
+      <input type="number" id="income" placeholder="es. 1800" min="0" />
+    </div>
+    <button class="calc-btn" onclick="calcBudget()">Calcola la mia ripartizione →</button>
+    <div class="result-grid" id="result" style="display:none">
+      <div class="result-item r-needs">
+        <div class="r-pct" style="color:var(--rust)">50%</div>
+        <div class="r-label">Bisogni</div>
+        <div class="r-euro" id="r1"></div>
+      </div>
+      <div class="result-item r-wants">
+        <div class="r-pct" style="color:#8a6d1a">30%</div>
+        <div class="r-label">Desideri</div>
+        <div class="r-euro" id="r2"></div>
+      </div>
+      <div class="result-item r-save">
+        <div class="r-pct" style="color:var(--sage)">20%</div>
+        <div class="r-label">Risparmio</div>
+        <div class="r-euro" id="r3"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-icon">🇮🇹</div>
+    <h3>Adattamento italiano</h3>
+    <p>Il costo della vita in Italia varia molto. A Milano o Roma il 50% per i bisogni potrebbe non bastare. Usa la regola come punto di partenza, non come dogma. L'obiettivo è che il risparmio sia <strong>almeno il 10%</strong>.</p>
+  </div>
+</div>
+
+<!-- EMERGENZA -->
+<div class="section" id="emergenza">
+  <div class="section-title">Fondo d'Emergenza</div>
+  <div class="section-subtitle">La priorità assoluta prima di qualsiasi investimento. Ti protegge dal dover vendere investimenti nel momento peggiore.</div>
+
+  <div class="calc-box">
+    <h3>Quanto ti serve?</h3>
+    <div class="input-row">
+      <label>SPESE MENSILI ESSENZIALI (€)</label>
+      <input type="number" id="monthly_exp" placeholder="es. 1200" />
+    </div>
+    <div class="input-row">
+      <label>MESI DI SICUREZZA DESIDERATI</label>
+      <input type="number" id="months" placeholder="3–6 consigliati" min="1" max="12" />
+    </div>
+    <button class="calc-btn" onclick="calcFondo()">Calcola il mio obiettivo →</button>
+    <div id="fondo-result" style="display:none; margin-top:24px;">
+      <div class="progress-section">
+        <div class="fe-header">
+          <strong id="fondo-total" style="font-size:28px; font-family:'Playfair Display',serif;"></strong>
+          <span>obiettivo</span>
+        </div>
+        <div class="progress-bar-wrap">
+          <div class="progress-fill" id="fondo-bar" style="width:0%"></div>
+        </div>
+        <p class="fe-note" id="fondo-note"></p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🏦</div>
+      <h3>Dove tenerlo</h3>
+      <p>Conto deposito libero o conto corrente separato. Non investito. Non vincolato. Deve essere accessibile in 24–48 ore.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⏳</div>
+      <h3>Come costruirlo</h3>
+      <p>Accantonamento mensile automatico. Anche €50/mese. In 2 anni con €100/mese raggiungi €2.400. La costanza batte la quantità.</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🔄</div>
+      <h3>Dopo averlo usato</h3>
+      <p>Ricostituiscilo prima di tutto. È la prima priorità, sempre, anche rispetto agli investimenti.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PIANO D'AZIONE -->
+<div class="section" id="azione">
+  <div class="section-title">Il Tuo Piano d'Azione</div>
+  <div class="section-subtitle">10 passi concreti. Spunta quelli che hai già fatto — ogni spunta è un progresso reale.</div>
+
+  <ul class="checklist" id="checklist">
+    <li onclick="toggle(this)">
+      <div class="check-box">✓</div>
+      <div class="check-text">
+        <strong>Calcola il tuo reddito netto mensile</strong>
+        <span>Stipendio dopo tasse, bonus, entrate extra. Il numero di partenza di tutto.</span>
+      </div>
+    </li>
+    <li onclick="toggle(this)">
+      <div class="check-box">✓</div>
+      <div class="check-text">
+        <strong>Mappa le tue spese per 1 mese</strong>
+        <span>Usa un'app (Spendee, Wallet) o un foglio Excel. Solo dati reali, niente stime.</span>
+      </div>
+    </li>
+    <li onclick="toggle(this)">
+      <div class="check-box">✓</div>
+      <div class="check-text">
+        <strong>Apri un conto separato per il risparmio</strong>
+        <span>Fisicamente separato dal conto corrente. "Out of sight, out of mind."</span>
+      </div>
+    </li>
+    <li onclick="toggle(this)">
+      <div class="check-box">✓</div>
+      <div class="check-text">
+        <strong>Imposta un bonifico automatico mensile</strong>
+        <span>Il giorno dopo lo stipendio. Pagati prima di tutto, poi vivi con il resto.</span>
+      </div>
+    </li>
+    <li onclick="toggle(this)">
+      <div class="check-box">✓</div>
+      <div class="check-text">
+        <strong>Definisci il tuo obiettivo di fondo d'emergenza</strong>
+        <span>Usa la calcolatrice nella sezione precedente. Mettilo per iscritto.</span>
+      </div>
+    </li>
+    <li onclick="toggle(this)">
+      <div class="check-box">✓</div>
+      <div class="check-text">
+        <strong>Identifica le 3 spese più inutili</strong>
+        <span>Abbonamenti dimenticati, acquisti impulsivi. Taglia o riduci almeno uno.</span>
+      </div>
+    </li>
+    <li onclick="toggle(this)">
+      <div class="check-box">✓</div>
+      <div class="check-text">
+        <strong>Controlla i tuoi debiti attivi</strong>
+        <span>Lista con importo residuo e tasso d'interesse. Ordina dal più costoso.</span>
+      </div>
+    </li>
+    <li onclick="toggle(this)">
+      <div class="check-box">✓</div>
+      <div class="check-text">
+        <strong>Pianifica come eliminare i debiti ad alto tasso</strong>
+        <span>Metodo valanga: paga prima quelli con interesse più alto. Poi scala.</span>
+      </div>
+    </li>
+    <li onclick="toggle(this)">
+      <div class="check-box">✓</div>
+      <div class="check-text">
+        <strong>Informati sul TFR e pensione integrativa</strong>
+        <span>Destinare il TFR a un fondo pensione ha vantaggi fiscali concreti in Italia.</span>
+      </div>
+    </li>
+    <li onclick="toggle(this)">
+      <div class="check-box">✓</div>
+      <div class="check-text">
+        <strong>Fissa una revisione mensile dei tuoi conti</strong>
+        <span>30 minuti ogni mese. Guarda i progressi, aggiusta il tiro. La consistenza è tutto.</span>
+      </div>
+    </li>
+  </ul>
+  <p style="margin-top:20px; font-size:14px; color:rgba(26,26,24,0.45);" id="progress-text">0 di 10 completati</p>
+</div>
+
+<!-- ERRORI COMUNI -->
+<div class="section" id="errori">
+  <div class="section-title">Errori da Evitare</div>
+  <div class="section-subtitle">I 6 errori più comuni che sabotano le finanze personali — e come correggerli.</div>
+  <div class="mistake-list">
+    <div class="mistake-card">
+      <div class="mistake-num">01</div>
+      <div class="mistake-text">
+        <strong>Non avere un fondo d'emergenza</strong>
+        <p>Il 60% degli italiani non ha liquidità sufficiente per un imprevisto da €1.000. Risultato: debiti su carta di credito a tassi altissimi.</p>
+        <div class="tip"><strong>Rimedio:</strong> Prima di investire qualsiasi cosa, costruisci 3 mesi di spese in liquidità.</div>
+      </div>
+    </div>
+    <div class="mistake-card">
+      <div class="mistake-num">02</div>
+      <div class="mistake-text">
+        <strong>Aspettare "il momento giusto" per investire</strong>
+        <p>Il mercato è sempre "troppo alto" o "troppo rischioso". Chi aspetta il momento perfetto spesso non inizia mai.</p>
+        <div class="tip"><strong>Rimedio:</strong> Investi regolarmente piccole somme (PAC). Il tempo nel mercato batte il tempo del mercato.</div>
+      </div>
+    </div>
+    <div class="mistake-card">
+      <div class="mistake-num">03</div>
+      <div class="mistake-text">
+        <strong>Confondere risparmio con investimento</strong>
+        <p>I soldi fermi sul conto corrente perdono potere d'acquisto ogni anno per l'inflazione. Risparmiare ≠ investire.</p>
+        <div class="tip"><strong>Rimedio:</strong> Conto deposito per l'emergenza. ETF o fondi per il lungo periodo.</div>
+      </div>
+    </div>
+    <div class="mistake-card">
+      <div class="mistake-num">04</div>
+      <div class="mistake-text">
+        <strong>Lifestyle inflation</strong>
+        <p>Ogni aumento di stipendio viene immediatamente assorbito da spese più alte. I margini restano invariati per anni.</p>
+        <div class="tip"><strong>Rimedio:</strong> Ad ogni aumento, salva almeno il 50% dell'incremento prima di toccare il resto.</div>
+      </div>
+    </div>
+    <div class="mistake-card">
+      <div class="mistake-num">05</div>
+      <div class="mistake-text">
+        <strong>Ignorare i costi nascosti</strong>
+        <p>Commissioni sui fondi, costi di gestione, spese bancarie. Su 20 anni, l'1% in più di costi può costare decine di migliaia di euro.</p>
+        <div class="tip"><strong>Rimedio:</strong> Preferisci ETF a basso costo (TER < 0.30%) rispetto a fondi attivi costosi.</div>
+      </div>
+    </div>
+    <div class="mistake-card">
+      <div class="mistake-num">06</div>
+      <div class="mistake-text">
+        <strong>Non parlare di soldi</strong>
+        <p>Il tabù culturale intorno al denaro impedisce di imparare dagli altri e di fare domande fondamentali in tempo.</p>
+        <div class="tip"><strong>Rimedio:</strong> Leggi, parla con un consulente indipendente (fee-only), confrontati con persone di fiducia.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- GLOSSARIO -->
+<div class="section" id="glossario">
+  <div class="section-title">Glossario Essenziale</div>
+  <div class="section-subtitle">I termini che senti spesso — spiegati in modo umano. Clicca per espandere.</div>
+  <div class="glossary" id="glossary">
+    <div class="glossary-item">
+      <div class="glossary-q" onclick="toggleGloss(this)">Interesse composto <em class="chevron">▾</em></div>
+      <div class="glossary-a">Gli interessi che guadagni vengono reinvestiti e generano a loro volta nuovi interessi. Nel tempo, questo effetto "valanga" fa crescere il capitale in modo esponenziale. Einstein lo chiamava "l'ottava meraviglia del mondo". Prima inizi, più potente è l'effetto.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-q" onclick="toggleGloss(this)">ETF (Exchange Traded Fund) <em class="chevron">▾</em></div>
+      <div class="glossary-a">Un fondo di investimento che replica un indice (es. S&P 500, MSCI World) e si compra in borsa come un'azione. Costi molto bassi, diversificazione automatica su centinaia di aziende. Ideale per chi vuole investire senza scegliere singole azioni.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-q" onclick="toggleGloss(this)">PAC (Piano Accumulo Capitale) <em class="chevron">▾</em></div>
+      <div class="glossary-a">Investire una somma fissa ogni mese, indipendentemente dal mercato. Nei mesi di calo compri più quote; nei mesi di rialzo ne compri meno. Nel lungo periodo, questo "dollar cost averaging" riduce il rischio di timing sbagliato.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-q" onclick="toggleGloss(this)">Inflazione <em class="chevron">▾</em></div>
+      <div class="glossary-a">L'aumento generalizzato dei prezzi nel tempo. Con un'inflazione al 2%, €10.000 oggi valgono come €8.200 tra 10 anni in termini di potere d'acquisto. Ecco perché tenere troppi soldi "fermi" è un rischio reale.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-q" onclick="toggleGloss(this)">TFR (Trattamento Fine Rapporto) <em class="chevron">▾</em></div>
+      <div class="glossary-a">In Italia, una quota dello stipendio (circa 6.9%) accantonata ogni anno dal datore di lavoro. Puoi lasciarlo in azienda o destinarlo a un fondo pensione. Quest'ultima opzione offre vantaggi fiscali significativi: i contributi sono deducibili fino a €5.164/anno.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-q" onclick="toggleGloss(this)">Diversificazione <em class="chevron">▾</em></div>
+      <div class="glossary-a">Non mettere tutte le uova nello stesso paniere. Distribuire gli investimenti su più asset (azioni, obbligazioni, settori, paesi) riduce il rischio totale senza necessariamente ridurre il rendimento atteso.</div>
+    </div>
+    <div class="glossary-item">
+      <div class="glossary-q" onclick="toggleGloss(this)">Orizzonte temporale <em class="chevron">▾</em></div>
+      <div class="glossary-a">Per quanto tempo puoi lasciare investiti i soldi prima di averne bisogno. È il fattore più importante per decidere quanto rischio prendere. Orizzonte lungo (10+ anni) → puoi accettare più volatilità. Breve (1-3 anni) → meglio strumenti conservativi.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function show(id) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  function calcBudget() {
+    const v = parseFloat(document.getElementById('income').value);
+    if (!v || v <= 0) return;
+    document.getElementById('r1').textContent = '€' + (v * 0.5).toFixed(0);
+    document.getElementById('r2').textContent = '€' + (v * 0.3).toFixed(0);
+    document.getElementById('r3').textContent = '€' + (v * 0.2).toFixed(0);
+    document.getElementById('result').style.display = 'grid';
+  }
+
+  function calcFondo() {
+    const exp = parseFloat(document.getElementById('monthly_exp').value);
+    const months = parseFloat(document.getElementById('months').value);
+    if (!exp || !months) return;
+    const total = exp * months;
+    document.getElementById('fondo-total').textContent = '€' + total.toLocaleString('it-IT');
+    document.getElementById('fondo-note').textContent =
+      `Con ${months} mesi di spese essenziali (€${exp.toLocaleString('it-IT')}/mese), il tuo obiettivo è €${total.toLocaleString('it-IT')}. Accantonando €100 al mese ci arriverai in ${Math.ceil(total/100)} mesi.`;
+    document.getElementById('fondo-result').style.display = 'block';
+    setTimeout(() => { document.getElementById('fondo-bar').style.width = '0%'; }, 50);
+  }
+
+  function toggle(el) {
+    el.classList.toggle('done');
+    const done = document.querySelectorAll('#checklist li.done').length;
+    const total = document.querySelectorAll('#checklist li').length;
+    document.getElementById('progress-text').textContent = `${done} di ${total} completati`;
+  }
+
+  function toggleGloss(el) {
+    const item = el.parentElement;
+    const wasOpen = item.classList.contains('open');
+    document.querySelectorAll('.glossary-item').forEach(i => i.classList.remove('open'));
+    if (!wasOpen) item.classList.add('open');
+  }
+</script>
+</body>
+</html>
